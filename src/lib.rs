@@ -15,7 +15,7 @@ use asr::{
     time::Duration,
     timer::{self, TimerState},
     watcher::Watcher,
-    Process,
+    Process, settings::Gui,
 };
 
 asr::panic_handler!();
@@ -24,7 +24,7 @@ asr::async_main!(nightly);
 const PROCESS_NAMES: &[&str] = &["PAC-MAN WORLD Re-PAC.exe"];
 
 async fn main() {
-    let settings = Settings::register();
+    let mut settings = Settings::register();
 
     loop {
         // Hook to the target process
@@ -45,6 +45,7 @@ async fn main() {
                     // 2. If the timer is currently either running or paused, then the isLoading, gameTime, and reset actions will be run.
                     // 3. If reset does not return true, then the split action will be run.
                     // 4. If the timer is currently not running (and not paused), then the start action will be run.
+                    settings.update();
                     update_loop(&process, &memory, &mut watchers);
 
                     let timer_state = timer::state();
@@ -88,7 +89,7 @@ async fn main() {
     }
 }
 
-#[derive(asr::user_settings::Settings)]
+#[derive(Gui)]
 struct Settings {
     #[default = true]
     /// => Enable auto start
